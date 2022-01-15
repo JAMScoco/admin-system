@@ -1,15 +1,20 @@
 package com.jamscoco.config;
 
+import com.jamscoco.config.security.CustomizeAbstractSecurityInterceptor;
 import com.jamscoco.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -25,6 +30,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationSuccessHandler authenticationSuccessHandler;
+
+    @Autowired
+    private AccessDecisionManager accessDecisionManager;
+
+    @Autowired
+    private FilterInvocationSecurityMetadataSource securityMetadataSource;
+
+    @Autowired
+    private CustomizeAbstractSecurityInterceptor securityInterceptor;
 
     @Autowired
     private LogoutSuccessHandler logoutSuccessHandler;
@@ -43,9 +57,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //http相关的配置，包括登入登出、异常处理、会话管理等
+        http.cors().and().csrf().disable();
         http.authorizeRequests().
-                antMatchers("/getUser").hasAuthority("query_user");
+                withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+                    @Override
+                    public <O extends FilterSecurityInterceptor> O postProcess(O o) {
+                        o.setAccessDecisionManager(accessDecisionManager);//访问决策管理器
+                        o.setSecurityMetadataSource(securityMetadataSource);//安全元数据源
+                        return o;
+                    }
+                });
         http.exceptionHandling().
                 authenticationEntryPoint(authenticationEntryPoint);
         http.formLogin().
@@ -56,7 +77,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 permitAll().//允许所有用户
                 logoutSuccessHandler(logoutSuccessHandler).//登出成功处理逻辑
                 deleteCookies("JSESSIONID");
-        http.csrf().disable();
+
+        http.addFilterBefore(securityInterceptor, FilterSecurityInterceptor.class);//增加到默认拦截链中
+
     }
 
     @Override
