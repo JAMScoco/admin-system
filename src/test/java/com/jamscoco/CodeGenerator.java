@@ -113,10 +113,9 @@ public class CodeGenerator {
         strategy.setRestControllerStyle(true);
         // 公共父类
         // 写于父类中的公共字段
-        strategy.setSuperEntityColumns("id");
         strategy.setInclude(scanner("输入表名").split(","));
         strategy.setControllerMappingHyphenStyle(true);
-        strategy.setTablePrefix(pc.getModuleName() + "_");
+        strategy.setTablePrefix("sys"+"_");
         mpg.setStrategy(strategy);
         mpg.execute();
     }
