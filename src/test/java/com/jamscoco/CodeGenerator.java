@@ -115,7 +115,7 @@ public class CodeGenerator {
         // 写于父类中的公共字段
         strategy.setInclude(scanner("输入表名").split(","));
         strategy.setControllerMappingHyphenStyle(true);
-        strategy.setTablePrefix("sys"+"_");
+        strategy.setTablePrefix("前缀_");
         mpg.setStrategy(strategy);
         mpg.execute();
     }
