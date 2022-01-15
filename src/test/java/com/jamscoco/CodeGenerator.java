@@ -45,12 +45,12 @@ public class CodeGenerator {
         gc.setOutputDir(projectPath + "/src/main/java");
         gc.setAuthor("JAMScoco");
         gc.setOpen(false);
-        // gc.setSwagger2(true); 实体属性 Swagger2 注解
+        gc.setSwagger2(true); //实体属性 Swagger2 注解
         mpg.setGlobalConfig(gc);
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3306/library?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Hongkong");
+        dsc.setUrl("jdbc:mysql://localhost:3306/admin_system?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Hongkong");
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
         dsc.setPassword("root");
@@ -58,7 +58,7 @@ public class CodeGenerator {
 
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setModuleName(scanner("jamscoco"));
+        pc.setModuleName(scanner("包名"));
         pc.setParent("com");
         mpg.setPackageInfo(pc);
 
@@ -114,7 +114,7 @@ public class CodeGenerator {
         // 公共父类
         // 写于父类中的公共字段
         strategy.setSuperEntityColumns("id");
-        strategy.setInclude(scanner("tb_book,tb_borrow,tb_reader,tb_readertype").split(","));
+        strategy.setInclude(scanner("输入表名").split(","));
         strategy.setControllerMappingHyphenStyle(true);
         strategy.setTablePrefix(pc.getModuleName() + "_");
         mpg.setStrategy(strategy);
