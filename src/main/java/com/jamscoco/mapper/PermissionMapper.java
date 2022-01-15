@@ -18,4 +18,6 @@ import java.util.List;
 public interface PermissionMapper extends BaseMapper<Permission> {
 
     List<Permission> getPermissionsByUserId(String id);
+
+    List<Permission> getPermissionsByUrl(String requestUrl);
 }

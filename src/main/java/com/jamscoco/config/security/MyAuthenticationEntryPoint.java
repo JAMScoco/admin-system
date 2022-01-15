@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 
 @Component
-public class CustomizeAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         R error = R.error(403,"权限不足");

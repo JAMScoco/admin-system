@@ -6,7 +6,8 @@ import org.springframework.security.access.intercept.AbstractSecurityInterceptor
 import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+
 
 import javax.servlet.*;
 import java.io.IOException;
@@ -14,14 +15,14 @@ import java.io.IOException;
 /**
  *  权限拦截器
  */
-@Service
-public class CustomizeAbstractSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
+@Component
+public class MyAbstractSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
 
     @Autowired
     private FilterInvocationSecurityMetadataSource securityMetadataSource;
 
     @Autowired
-    public void setMyAccessDecisionManager(CustomizeAccessDecisionManager accessDecisionManager) {
+    public void setMyAccessDecisionManager(MyAccessDecisionManager accessDecisionManager) {
         super.setAccessDecisionManager(accessDecisionManager);
     }
 

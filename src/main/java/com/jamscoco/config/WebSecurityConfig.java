@@ -1,6 +1,8 @@
 package com.jamscoco.config;
 
-import com.jamscoco.config.security.CustomizeAbstractSecurityInterceptor;
+import com.jamscoco.config.security.JwtAuthenticationFilter;
+import com.jamscoco.config.security.MyAbstractSecurityInterceptor;
+import com.jamscoco.config.security.MyAccessDeniedHandler;
 import com.jamscoco.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,31 +21,40 @@ import org.springframework.security.web.access.intercept.FilterInvocationSecurit
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private AuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
-    private AuthenticationFailureHandler authenticationFailureHandler;
+    private AuthenticationEntryPoint authenticationEntryPoint;//无权限时处理逻辑
+
+    //权限拒绝处理逻辑
+    @Autowired
+    private MyAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
-    private AuthenticationSuccessHandler authenticationSuccessHandler;
+    private AuthenticationFailureHandler authenticationFailureHandler;//登录失败处理逻辑
 
     @Autowired
-    private AccessDecisionManager accessDecisionManager;
+    private AuthenticationSuccessHandler authenticationSuccessHandler;//登录成功处理逻辑
 
     @Autowired
-    private FilterInvocationSecurityMetadataSource securityMetadataSource;
+    private AccessDecisionManager accessDecisionManager;//访问决策管理器
 
     @Autowired
-    private CustomizeAbstractSecurityInterceptor securityInterceptor;
+    private FilterInvocationSecurityMetadataSource securityMetadataSource;//实现权限拦截
 
     @Autowired
-    private LogoutSuccessHandler logoutSuccessHandler;
+    private MyAbstractSecurityInterceptor securityInterceptor;
+
+    @Autowired
+    private LogoutSuccessHandler logoutSuccessHandler;//登出成功处理逻辑
+
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -68,6 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     }
                 });
         http.exceptionHandling().
+                accessDeniedHandler(accessDeniedHandler).
                 authenticationEntryPoint(authenticationEntryPoint);
         http.formLogin().
                 permitAll().//允许所有用户
@@ -77,7 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 permitAll().//允许所有用户
                 logoutSuccessHandler(logoutSuccessHandler).//登出成功处理逻辑
                 deleteCookies("JSESSIONID");
-
+        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(securityInterceptor, FilterSecurityInterceptor.class);//增加到默认拦截链中
 
     }

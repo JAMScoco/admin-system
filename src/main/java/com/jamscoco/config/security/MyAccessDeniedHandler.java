@@ -2,8 +2,8 @@ package com.jamscoco.config.security;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jamscoco.util.R;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
@@ -11,17 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 登出成功处理逻辑
- */
 @Component
-public class CustomizeLogoutSuccessHandler implements LogoutSuccessHandler {
+public class MyAccessDeniedHandler implements AccessDeniedHandler {
     @Override
-    public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-        R r = R.ok();
-        //TODO redis删除token
+    public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServletException {
+        R r  = R.error(403,"无权限操作");
         httpServletResponse.setContentType("text/json;charset=utf-8");
         httpServletResponse.getWriter().write(JSONObject.toJSONString(r));
     }
 }
-
