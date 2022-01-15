@@ -2,6 +2,9 @@ package com.jamscoco.mapper;
 
 import com.jamscoco.entity.Permission;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -11,6 +14,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author JAMScoco
  * @since 2022-01-15
  */
+@Mapper
 public interface PermissionMapper extends BaseMapper<Permission> {
 
+    List<Permission> getPermissionsByUserId(String id);
 }
