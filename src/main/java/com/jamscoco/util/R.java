@@ -11,16 +11,16 @@ public class R extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
     public R() {
-        put("status", 0);
-        put("msg", "查询成功");
+        put("status", 200);
+        put("msg", "成功");
     }
 
     public static R error() {
-        return error(-1, "发生错误");
+        return error(500, "发生错误");
     }
 
     public static R error(String msg) {
-        return error(-1, msg);
+        return error(500, msg);
     }
 
     public static R error(int status, String msg) {

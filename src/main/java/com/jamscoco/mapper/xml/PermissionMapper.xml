@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jamscoco.mapper.PermissionMapper">
 
-    <select id="getPermissionsByUserId" resultType="Permission">
+    <select id="getPermissionsByUserId" resultType="com.jamscoco.entity.Permission">
         SELECT
             p.*
         FROM
