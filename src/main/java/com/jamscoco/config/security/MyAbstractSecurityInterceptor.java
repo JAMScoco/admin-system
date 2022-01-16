@@ -13,7 +13,7 @@ import javax.servlet.*;
 import java.io.IOException;
 
 /**
- *  权限拦截器
+ *  权限过滤器
  */
 @Component
 public class MyAbstractSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {

@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * 访问决策管理器
+ * 访问决策管理器（判断当前用户是否满足权限）
  */
 @Component
 public class MyAccessDecisionManager implements AccessDecisionManager {
@@ -31,7 +31,7 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
                 }
             }
         }
-        throw new AccessDeniedException("权限不足!");
+        throw new AccessDeniedException("拒绝访问!");
     }
 
     @Override

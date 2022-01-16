@@ -1,4 +1,4 @@
-package com.jamscoco.config.security;
+package com.jamscoco.handler;
 
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;

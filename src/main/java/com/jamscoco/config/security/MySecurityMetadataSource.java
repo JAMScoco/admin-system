@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 
+
+/**
+ * 安全元数据源（查询目标请求所需权限）
+ */
 @Component
 public class MySecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
@@ -20,7 +24,6 @@ public class MySecurityMetadataSource implements FilterInvocationSecurityMetadat
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-
         //获取请求地址
         String requestUrl = ((FilterInvocation) o).getRequestUrl();
         //查询具体某个接口的权限

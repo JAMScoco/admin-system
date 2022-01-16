@@ -1,6 +1,6 @@
 package com.jamscoco.service;
 
-import com.jamscoco.entity.User;
+import com.jamscoco.entity.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author JAMScoco
  * @since 2022-01-15
  */
-public interface IUserService extends IService<User> {
+public interface IUserService extends IService<SysUser> {
 
 }
