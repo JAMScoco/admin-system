@@ -1,4 +1,4 @@
-package com.jamscoco.util;
+package com.jamscoco.utils;
 import java.util.HashMap;
 import java.util.Map;
 

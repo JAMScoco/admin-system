@@ -1,10 +1,14 @@
 package com.jamscoco.config.security;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.alibaba.fastjson.JSONObject;
+import com.jamscoco.utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,9 +35,11 @@ import java.util.Map;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Value("${jwt.key}")
-    private byte[] key;
+    @Value("${redis.login.key}")
+    private String REDIS_LOGIN_KEY;
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -43,10 +49,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        //如果请求头中有token,则进行解析，并且设置认证信息
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(token);
-        //设置上下文
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        //如果请求头中有token且合法,则进行解析，并且设置认证信息
+        if (JwtUtil.verify(token)) {
+            UsernamePasswordAuthenticationToken authentication = getAuthentication(token);
+            //设置上下文
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
         chain.doFilter(request, response);
     }
 
@@ -54,17 +62,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(String token) {
         String json = "";
         try {
-            SymmetricCrypto aes = new SymmetricCrypto(SymmetricAlgorithm.AES, "sdhfjshfkjshfsuf".getBytes());
-            json = aes.decryptStr(token, CharsetUtil.CHARSET_UTF_8);
-            Map info = JSONObject.parseObject(json, Map.class);
-            String username = (String) info.get("username");
+            String username = JwtUtil.getUsername(token);
+            String encode = (String) redisTemplate.opsForHash().get(REDIS_LOGIN_KEY, token);
+            String authoritiesStr = Base64.decodeStr(encode);
+            List list = JSONObject.parseObject(authoritiesStr, List.class);
             // 获得权限 添加到权限上去
-            String authorities = info.get("authorities").toString();
-            List list = JSONObject.parseObject(authorities, List.class);
             List<GrantedAuthority> roles = new ArrayList<>();
             for (Object o : list) {
-                GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(o.toString());
-                roles.add(grantedAuthority);
+                roles.add(new GrantedAuthority() {
+                    @Override
+                    public String getAuthority() {
+                        return (String) o;
+                    }
+                });
             }
             if (username != null) {
                 return new UsernamePasswordAuthenticationToken(username, null, roles);

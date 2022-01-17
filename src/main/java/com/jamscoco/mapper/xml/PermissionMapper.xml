@@ -13,7 +13,7 @@
                            ON r.id = rp.role_id
                  LEFT JOIN sys_permission AS p
                            ON p.id = rp.permission_id
-        WHERE u.id = #{userId}
+        WHERE u.id = #{userId} and p.type = 2
     </select>
     <select id="getPermissionsByUrl" resultType="com.jamscoco.entity.Permission">
         select *
