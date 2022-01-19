@@ -47,5 +47,8 @@ public class Permission implements Serializable {
     @ApiModelProperty(value = "组件路径")
     private String component;
 
+    @ApiModelProperty(value = "组件图标")
+    private String icon;
+
 
 }

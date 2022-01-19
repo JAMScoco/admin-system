@@ -21,4 +21,21 @@
         where type = 2
           and path = #{requestUrl}
     </select>
+
+    <select id="getParentMenuByUserId" resultType="com.jamscoco.entity.Permission">
+        SELECT p.*
+        FROM sys_user AS u
+                 LEFT JOIN sys_user_role AS ur
+                           ON u.id = ur.user_id
+                 LEFT JOIN sys_role AS r
+                           ON r.id = ur.role_id
+                 LEFT JOIN sys_role_permission AS rp
+                           ON r.id = rp.role_id
+                 LEFT JOIN sys_permission AS p
+                           ON p.id = rp.permission_id
+        WHERE u.id = #{userId} and p.type = 1 and p.parent_id is null
+    </select>
+    <select id="getChildPermission" resultType="com.jamscoco.entity.Permission">
+        select * from sys_permission where parent_id = #{id} and type = 1
+    </select>
 </mapper>

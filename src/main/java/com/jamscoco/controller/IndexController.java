@@ -9,6 +9,7 @@ public class IndexController {
 
     @GetMapping("test")
     public R test(){
+        System.out.println("come");
         return R.ok();
     }
 }

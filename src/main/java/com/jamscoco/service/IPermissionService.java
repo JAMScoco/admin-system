@@ -3,6 +3,9 @@ package com.jamscoco.service;
 import com.jamscoco.entity.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  *  服务类
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPermissionService extends IService<Permission> {
 
+    List<Map<String,Object>> getMenuByUsername(String username);
 }

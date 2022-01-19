@@ -17,7 +17,31 @@ import java.util.List;
 @Mapper
 public interface PermissionMapper extends BaseMapper<Permission> {
 
+    /**
+     * 根据用户ID获取可访问的接口
+     * @param id 用户ID
+     * @return 可访问的接口
+     */
     List<Permission> getPermissionsByUserId(String id);
 
+    /**
+     * 获取接口所需要的权限
+     * @param requestUrl 接口链接
+     * @return 所需要的权限
+     */
     List<Permission> getPermissionsByUrl(String requestUrl);
+
+    /**
+     * 根据用户ID获取父级菜单
+     * @param id 用户ID
+     * @return 父级菜单列表
+     */
+    List<Permission> getParentMenuByUserId(String id);
+
+    /**
+     * 根据父级菜单id获取子菜单
+     * @param pid 父级菜单id
+     * @return 子菜单列表
+     */
+    List<Permission> getChildPermission(String pid);
 }
