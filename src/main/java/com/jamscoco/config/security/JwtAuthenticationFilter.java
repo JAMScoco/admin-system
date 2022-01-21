@@ -60,7 +60,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     //获取用户信息
     private UsernamePasswordAuthenticationToken getAuthentication(String token) {
-        String json = "";
         try {
             String username = JwtUtil.getUsername(token);
             String encode = (String) redisTemplate.opsForHash().get(REDIS_LOGIN_KEY, token);

@@ -1,5 +1,6 @@
 package com.jamscoco.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jamscoco.entity.UserRole;
 import com.jamscoco.mapper.UserRoleMapper;
 import com.jamscoco.service.IUserRoleService;
@@ -16,5 +17,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements IUserRoleService {
+
+    @Override
+    public void doAssigningRoles(String userId, String[] roleIds) {
+        for (String roleId : roleIds) {
+                UserRole userRole = new UserRole();
+                userRole.setUserId(userId);
+                userRole.setRoleId(roleId);
+                baseMapper.insert(userRole);
+        }
+    }
+
 
 }

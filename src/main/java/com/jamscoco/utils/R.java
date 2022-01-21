@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 返回数据
+ * 统一返回数据
  *
  * @author
  */

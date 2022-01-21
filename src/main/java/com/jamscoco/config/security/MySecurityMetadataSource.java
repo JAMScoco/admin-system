@@ -27,6 +27,8 @@ public class MySecurityMetadataSource implements FilterInvocationSecurityMetadat
         //获取请求地址
         String requestUrl = ((FilterInvocation) o).getRequestUrl();
         //查询具体某个接口的权限
+        int index = requestUrl.lastIndexOf('?');
+        requestUrl = requestUrl.substring(0, index!=-1?index:requestUrl.length());
         List<Permission> permissionList = permissionMapper.getPermissionsByUrl(requestUrl);
         if(permissionList == null || permissionList.size() == 0){
             //请求路径没有配置权限，表明该请求接口可以任意访问
