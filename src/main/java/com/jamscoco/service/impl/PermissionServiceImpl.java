@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jamscoco.entity.Permission;
 import com.jamscoco.entity.SysUser;
 import com.jamscoco.mapper.PermissionMapper;
+import com.jamscoco.mapper.RolePermissionMapper;
 import com.jamscoco.mapper.UserMapper;
 import com.jamscoco.service.IPermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author JAMScoco
@@ -30,9 +31,12 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private RolePermissionMapper rolePermissionMapper;
+
     @Override
-    public List<Map<String,Object>> getMenuByUsername(String username) {
-        List<Map<String,Object>> result = new ArrayList<>();
+    public List<Map<String, Object>> getMenuByUsername(String username) {
+        List<Map<String, Object>> result = new ArrayList<>();
         try {
             SysUser user = userMapper.selectOne(new QueryWrapper<SysUser>().eq("username", username));
             List<Permission> parents = baseMapper.getParentMenuByUserId(user.getId());
@@ -41,7 +45,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
                 pMap.put("path", "/");
                 pMap.put("component", "Home");
                 pMap.put("icon", parent.getIcon());
-                List<Permission> childrenList = baseMapper.getChildPermission(parent.getId());
+                List<Permission> childrenList = baseMapper.getChildPermission(user.getId(),parent.getId());
                 List<Map<String, String>> cList = new ArrayList<>();
                 //叶子结点，无子菜单
                 if (childrenList.size() == 1) {
@@ -61,9 +65,73 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
                 pMap.put("children", cList);
                 result.add(pMap);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
         return result;
+    }
+
+    @Override
+    public void clearPermissions(String roleId) {
+        List<String> permissionIds = getPermissionsByRoleId(roleId);
+        if (permissionIds.size()>0){
+            rolePermissionMapper.removeRolePermissions(roleId, permissionIds);
+        }
+    }
+
+    @Override
+    public List<String> getPermissionsByRoleId(String roleId) {
+        return baseMapper.getPermissionsByRoleId(roleId);
+    }
+
+    @Override
+    public List<Map<String, Object>> getPermissionsTree() {
+        List<Map<String, Object>> result = new ArrayList<>();
+        QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id","name");
+        queryWrapper.isNull("parent_id");
+        //一级菜单
+        List<Permission> permissionsOne = baseMapper.selectList(queryWrapper);
+        List<Map<String, Object>> childrenOne = new ArrayList<>();
+        for (Permission permission : permissionsOne) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id",permission.getId());
+            map.put("name",permission.getName());
+            List<Map<String, Object>> child = getChildrenTree(permission.getId(),2);
+            if (child!=null){
+                map.put("children",child);
+            }
+            result.add(map);
+        }
+        return result;
+    }
+
+    /**
+     * 得到子树
+     * @param pid 父权限id
+     * @param deep 递归深度
+     * @return
+     */
+    private List<Map<String, Object>> getChildrenTree(String pid, int deep) {
+        if (deep == 0){
+            return null;
+        }else {
+            List<Map<String, Object>> list = new ArrayList<>();
+            QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("id","name");
+            queryWrapper.eq("parent_id",pid);
+            List<Permission> permissions = baseMapper.selectList(queryWrapper);
+            for (Permission permission : permissions) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id",permission.getId());
+                map.put("name",permission.getName());
+                List<Map<String, Object>> child = getChildrenTree(permission.getId(),deep-1);
+                if (child!=null){
+                    map.put("children",child);
+                }
+                list.add(map);
+            }
+            return list;
+        }
     }
 }

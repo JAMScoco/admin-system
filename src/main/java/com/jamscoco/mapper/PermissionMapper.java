@@ -41,7 +41,15 @@ public interface PermissionMapper extends BaseMapper<Permission> {
     /**
      * 根据父级菜单id获取子菜单
      * @param pid 父级菜单id
+     * @param userId 用户id
      * @return 子菜单列表
      */
-    List<Permission> getChildPermission(String pid);
+    List<Permission> getChildPermission(String userId,String pid);
+
+    /**
+     * 根据角色ID获取权限ID
+     * @param roleId 角色ID
+     * @return 权限ID列表
+     */
+    List<String> getPermissionsByRoleId(String roleId);
 }

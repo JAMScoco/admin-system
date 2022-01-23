@@ -37,8 +37,8 @@ public interface IUserService extends IService<SysUser> {
 
     /**
      * 编辑用户
-     * @param user user 待编辑用户实体
-     * @return 删除结果
+     * @param user 待编辑用户实体
+     * @return 编辑结果
      */
     R editUser(SysUser user);
 }
