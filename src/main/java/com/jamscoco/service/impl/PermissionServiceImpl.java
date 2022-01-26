@@ -8,6 +8,7 @@ import com.jamscoco.mapper.RolePermissionMapper;
 import com.jamscoco.mapper.UserMapper;
 import com.jamscoco.service.IPermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jamscoco.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,15 +89,19 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     public List<Map<String, Object>> getPermissionsTree() {
         List<Map<String, Object>> result = new ArrayList<>();
         QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("id","name");
         queryWrapper.isNull("parent_id");
         //一级菜单
         List<Permission> permissionsOne = baseMapper.selectList(queryWrapper);
-        List<Map<String, Object>> childrenOne = new ArrayList<>();
         for (Permission permission : permissionsOne) {
             Map<String, Object> map = new HashMap<>();
             map.put("id",permission.getId());
+            map.put("parentId",permission.getParentId());
             map.put("name",permission.getName());
+            map.put("type",permission.getType());
+            map.put("permissionValue",permission.getPermissionValue());
+            map.put("path",permission.getPath());
+            map.put("component",permission.getComponent());
+            map.put("icon",permission.getIcon());
             List<Map<String, Object>> child = getChildrenTree(permission.getId(),2);
             if (child!=null){
                 map.put("children",child);
@@ -104,6 +109,17 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             result.add(map);
         }
         return result;
+    }
+
+    @Override
+    public R removePermissionById(String permissionId) {
+        //TODO 条件判断 删除权限
+        if(true){
+            return R.error("不允许删除");
+        }else {
+            baseMapper.deleteById(permissionId);
+            return R.ok();
+        }
     }
 
     /**
@@ -118,13 +134,18 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         }else {
             List<Map<String, Object>> list = new ArrayList<>();
             QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
-            queryWrapper.select("id","name");
             queryWrapper.eq("parent_id",pid);
             List<Permission> permissions = baseMapper.selectList(queryWrapper);
             for (Permission permission : permissions) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("id",permission.getId());
+                map.put("parentId",permission.getParentId());
                 map.put("name",permission.getName());
+                map.put("type",permission.getType());
+                map.put("permissionValue",permission.getPermissionValue());
+                map.put("path",permission.getPath());
+                map.put("component",permission.getComponent());
+                map.put("icon",permission.getIcon());
                 List<Map<String, Object>> child = getChildrenTree(permission.getId(),deep-1);
                 if (child!=null){
                     map.put("children",child);

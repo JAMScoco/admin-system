@@ -2,6 +2,7 @@ package com.jamscoco.service;
 
 import com.jamscoco.entity.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jamscoco.utils.R;
 
 import java.util.List;
 import java.util.Map;
@@ -41,4 +42,11 @@ public interface IPermissionService extends IService<Permission> {
      * @return 权限树
      */
     List<Map<String, Object>> getPermissionsTree();
+
+    /**
+     * 删除权限
+     * @param permissionId
+     * @return
+     */
+    R removePermissionById(String permissionId);
 }
